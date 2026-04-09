@@ -1,0 +1,10 @@
+# config/pipeline_config.yaml
+input_path: 'data/raw/Base de datos Dengue UCIP.csv'
+target: 'desenlace'
+missing_threshold: 0.60
+random_state: 42
+test_size: 0.20
+cv_folds: 5
+
+# Rutas de salida
+output_path: 'data/processed/dengue_uci_cleaned.csv'
