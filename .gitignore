@@ -3,6 +3,10 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Cython debug symbols
+cython_debug/
+data/
+
 # C extensions
 *.so
 
