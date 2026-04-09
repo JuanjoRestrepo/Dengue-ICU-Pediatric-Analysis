@@ -1,48 +1,45 @@
-Proyecto de Data Science: Análisis de Dengue en UCI Pediátrica (Hospital Pediátrico de Cartagena)
-Como experto en data science, analytics, estadística, ingeniería de datos, machine learning y desarrollo full-stack, he desarrollado de inicio a fin un proyecto de alta calidad para su exposición. El enfoque sigue estrictamente las mejores prácticas definidas en SKILL.md (estructura de notebook, selección de frameworks, rigor estadístico, código production-ready) y las referencias etl_patterns.md, eda_templates.md, ml_evaluation.md y statistics_reference.md.
-Por qué este enfoque:
+# Dengue-ICU-Pediatric-Analysis
 
-Dataset pequeño (~202 registros válidos tras limpieza) → priorizamos EDA profundo + estadística inferencial antes de ML (evitamos overfitting).
-Objetivo clínico: identificar factores de riesgo asociados a desenlace (recuperación vs. muerte) y severidad (diagnóstico, PIM3).
-Código: modular OOP, type hints, Google docstrings, logging, validación de esquema (Pandera), configuración externa, ≥80% coverage en tests (incluidos).
-Notebook: estructurado, reproducible, exportable a HTML para exposición.
-Visualizaciones: Seaborn (distribuciones y correlaciones) + Plotly (interactivo para presentación).
-ML: XGBoost (mejor para datos tabulares pequeños e interpretabilidad) con evaluación rigurosa (ml_evaluation.md).
-Idioma del código: Python 3.12 + pandas/Polars (rápido para <1M filas). Justificación: pandas para legibilidad en EDA; Polars opcional en producción.
+## Project Overview & Objectives
+Proyecto de Data Science de inicio a fin sobre el análisis de Dengue en la UCI Pediátrica del Hospital Pediátrico de Cartagena. 
+Como experto en Data Science y Full-Stack, he desarrollado este proyecto bajo estándares de alta calidad, siguiendo rigor estadístico y código *production-ready*.
 
-Assunciones y riesgos (proactivos, como exige SKILL.md):
+* **Main Objective:** Identify clinical factors associated with severity and outcomes (recovery vs. death).
+* **Key Constraints:** Small dataset (~200 samples) with high-dimensional clinical variables.
+* **Core Approach:** Priorizamos un **EDA profundo y estadística inferencial** (Mann-Whitney U, Chi², Spearman) antes que el modelado masivo para mitigar el riesgo de *overfitting*.
 
-Datos de un solo centro referente → sesgo de selección (solo casos graves en UCI).
-Clase desbalanceada (pocos “Muerte”) → usaremos stratified CV + class weights.
-Valores faltantes altos en laboratorios → imputación con median + flag de missing.
-Edad agrupada (no numérica continua) → tratada como categórica ordinal.
-Edge cases: comas en números (“14,000”), valores “sin dato”, texto en mayúsculas/minúsculas.
+## Why This Approach?
+- **Dataset Size:** (~202 registros válidos) → El rigor estadístico es nuestra brújula para evitar falsos descubrimientos.
+- **ML Tooling:** XGBoost (seleccionado por su manejo de datos tabulares y facilidad de interpretabilidad) empleado como herramienta complementaria.
+- **Code Standards:** Modular OOP, Type Hints (Python 3.12), Google/NumPy docstrings, logging y validación de esquemas con Pandera.
+- **Visualizations:** Mix de Seaborn para rigor analítico y Plotly para interactividad en la exposición.
 
-1. Estructura del Proyecto (modular OOP)
-   Cree la siguiente estructura de carpetas (production-ready):
-
+## Project Structure (Modular OOP)
 ```bash
 dengue_uci_pediatrico/
-├── .venv/                          # ← uv creará aquí el entorno
-├── config/
-│   └── pipeline_config.yaml
-├── src/
-│   ├── __init__.py
+├── .venv/              # Gestión de entorno mediante uv
+├── config/             # pipeline_config.yaml (Externalized config)
+├── src/                # Lógica de producción modular
 │   ├── data_loader.py
 │   ├── data_cleaner.py
 │   ├── eda_analyzer.py
 │   ├── statistical_analyzer.py
-│   ├── model_trainer.py
 │   └── utils.py
-├── notebooks/
-│   └── 01_dengue_uci_eda_modeling.ipynb
-├── tests/
-│   └── test_pipeline.py
-├── data/
-│   ├── raw/Base de datos Dengue UCIP.csv
-│   └── processed/
-├── pyproject.toml                  # ← uv usa este archivo (mejor que requirements.txt)
-├── uv.lock
-├── README.md
-└── .gitignore
+├── notebooks/          # 01_dengue_uci_eda_modeling.ipynb
+├── tests/              # Unit tests (Target coverage: ≥80%)
+├── data/               # raw/ y processed/ (Local only - Git ignored)
+├── pyproject.toml      # uv configuration (modern dependency management)
+└── README.md
 ```
+
+## Assumptions & Risks (Proactive Analysis)
+- **Selection Bias:** Casos provenientes de un solo centro de referencia; representa únicamente la población de cuidados intensivos.
+- **Class Imbalance:** Fuerte desbalance en la variable objetivo (pocos eventos de "Muerte"); se utiliza stratified CV y class weights.
+- **Data Quality:** Valores faltantes imputados mediante mediana con flagging de registros nulos para mantener la integridad del análisis.
+
+## Development Stack
+- **Environment**: uv (fast, reliable dependency management).
+- **Linter/Formatter**: Ruff (PEP8 compliance).
+- **Type Checker**: Mypy & Pylance (Strict typing).
+- **CI/CD Ready**: Modular architecture prepared for automated testing.
+
