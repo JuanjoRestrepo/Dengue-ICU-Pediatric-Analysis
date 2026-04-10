@@ -16,20 +16,82 @@ dependencies = [
     "pyyaml>=6.0",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "ipykernel>=6.29",
-    "black>=24.0",
+    "nbqa>=1.8",
     "ruff>=0.4",
+    "mypy>=1.10",
+    "pandas-stubs>=2.2",
+    "types-pyyaml>=6.0",
     "pytest>=8.0",
     "pytest-cov>=5.0",
 ]
 
+# =============================================================================
+# Ruff — Linter + Formatter (Configuración Ultra-Flexible)
+# =============================================================================
 [tool.ruff]
-line-length = 100
 target-version = "py312"
+line-length = 100
+# ESTO SOLUCIONA EL ERROR F821: Define 'display' como una función global válida
+builtins = ["display"]
 
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "B", "C4", "UP", "G", "N", "SIM", "RUF", "ANN", "PTH",
+]
+ignore = [
+    "ANN101", "ANN102", "ANN401", "E501",
+    "N806",   # Permite 'X' mayúscula (estándar en Data Science)
+    "PTH123", # Permite open() tradicional
+    "E402",   # SOLUCIONA EL ERROR E402: Permite imports en cualquier celda de forma global
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Flexibilidad extra para notebooks y tests
+"**/*.ipynb" = [
+    "ANN",    # No exige anotaciones de tipo
+    "F401",   # Permite imports no usados (útil para pruebas rápidas)
+    "F811",   # Permite redefinir variables en celdas distintas
+]
+"tests/*.py" = ["ANN", "S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+force-sort-within-sections = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+
+# =============================================================================
+# mypy — Type Checker
+# =============================================================================
+[tool.mypy]
+python_version = "3.12"
+strict = false
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+pretty = true
+
+# Silenciamos MyPy en notebooks para evitar ruido innecesario en la EDA
+[[tool.mypy.overrides]]
+module = "notebooks.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+    "xgboost.*", "shap.*", "seaborn.*", "plotly.*", "scipy.*", "sklearn.*", "pandera.*",
+]
+ignore_missing_imports = true
+
+# =============================================================================
+# pytest
+# =============================================================================
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
-addopts = "--cov=src --cov-report=term-missing"
+addopts = "--cov=src --cov-report=term-missing --cov-fail-under=80"
