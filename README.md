@@ -16,6 +16,10 @@ Como experto en Data Science y Full-Stack, he desarrollado este proyecto bajo es
 - **Code Standards:** Modular OOP, Type Hints (Python 3.12), Google/NumPy docstrings, logging y validación de esquemas con Pandera.
 - **Visualizations:** Mix de Seaborn para rigor analítico y Plotly para interactividad en la exposición.
 
+## Dashboard
+
+![Dashboard_P1](Power_BI\images\P1.png)
+
 ## Project Structure (Modular OOP)
 
 ```bash
