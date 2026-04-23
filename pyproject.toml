@@ -80,7 +80,7 @@ pretty = true
 # Silenciamos MyPy en notebooks para evitar ruido innecesario en la EDA
 [[tool.mypy.overrides]]
 module = "notebooks.*"
-ignore_errors = true
+ignore_errors = false
 
 [[tool.mypy.overrides]]
 module = [
