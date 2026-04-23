@@ -1,0 +1,23 @@
+# Preguntas Frecuentes y Decisiones Técnicas del Dashboard
+
+Este documento detalla el razonamiento técnico, estadístico y clínico detrás de las decisiones de diseño de datos y visualización del Dashboard en Power BI para el análisis del Dengue en la UCI Pediátrica. Estas decisiones garantizan rigor metodológico y transparencia.
+
+---
+
+### 1. ¿Por qué no se imputó la categoría vacía de "Diagnóstico Clínico" como "dengue con signos de alarma", a pesar de que el perfil del paciente era clínicamente compatible?
+**R/** Según las mejores prácticas en Data Science, imputar una variable médica categórica basándose en la asunción de otras (BUN, AST, plaquetas) puede introducir un sesgo severo si la ausencia de la etiqueta es *Missing Not At Random (MNAR)*. El diagnóstico clínico es una decisión documentada, no solo una variable numérica. Imputarlo artificialmente habría presentado un dato que nunca existió formalmente en el expediente clínico original, violando la trazabilidad. Se decidió etiquetar en Power Query como **"Sin Registro"** para reflejar la realidad del sistema de captura de datos y excluirlo de los porcentajes válidos, adjuntando una nota aclaratoria.
+
+### 2. En la importancia global del modelo (SHAP), ¿Por qué la variable "Diagnóstico" arrojó un impacto exacto de 0.0000?
+**R/** El algoritmo XGBoost aprendió que las variables numéricas fisiológicas subyacentes (AST, BUN, Plaquetas, Vasopresina) capturan de forma mucho más potente el verdadero riesgo del paciente que una etiqueta subjetiva en texto. Debido a la correlación inherente, la etiqueta "Diagnóstico" resulta redundante. El modelo ignora la etiqueta de texto y se centra en el deterioro multiorgánico real de la sangre, lo que demuestra la superioridad de los marcadores clínicos sobre clasificaciones textuales abstractas para la predicción de mortalidad.
+
+### 3. ¿Cómo se resolvió la visualización del Scatter Plot para evitar que el *outlier* extremo de AST (2.589 U/L) ocultara el comportamiento de la mayoría de los pacientes?
+**R/** En el gráfico de **BUN vs AST**, incluir un valor de AST de 2.589 aplastaba a los demás 39 pacientes (cuyos valores rondaban entre 17 y 500) en el límite inferior del Eje Y en una escala lineal estándar. Para retener al paciente en alto riesgo sin destruir la legibilidad visual del cohorte de riesgo bajo, se implementó una **Escala Logarítmica en el Eje Y**. Esto permite al médico clínico observar variaciones en niveles bajos y medios, manteniendo de manera proporcional al paciente en fallo orgánico severo aislado en el cuadrante de riesgo.
+
+### 4. ¿Por qué la estratificación de riesgo no incluye una categoría de "Riesgo Moderado"?
+**R/** Se generó la variable `Risk_Category` dinámicamente en Power Query. Aunque la intención inicial era segmentar el riesgo en tres categorías (Bajo, Moderado, Alto), los datos reales del conjunto de pruebas indicaban solo una división bipolar: 39 pacientes con probabilidades estables de ~3.64% (Riesgo Bajo) y 1 paciente anómalo con ~4.66% (Riesgo Alto). Forzar visualmente una leyenda "Riesgo Moderado" carente de pacientes activos representaría datos "fantasma", minando la confianza en el reporte. El panel muestra exclusivamente datos respaldados por la evidencia estadística.
+
+### 5. ¿Cómo se interpretan los valores SHAP negativos que se observan en las variables clave como BUN o Vasopresina?
+**R/** Los valores SHAP (Shapley Additive exPlanations) indican la contribución individual de una característica a la desviación respecto a la predicción base del modelo. Un **SHAP negativo reduce la probabilidad predicha de mortalidad**. Clínicamente, esto parece contraintuitivo para biomarcadores altos, pero tiene una explicación estadística rigurosa: dentro del tamaño de muestra analizado, muchos de los pacientes que finalmente sobrevivieron (outcome positivo) presentaron niveles considerables de BUN y requerimiento de Vasopresina. Por consiguiente, la inferencia probabilística no asocia directamente niveles estándar elevados con muerte inminente, reservando el aumento de probabilidad (SHAP positivo) únicamente a escenarios extremadamente disonantes como el daño hepático agudo por encima de 2.000 U/L en el AST (Paciente 37).
+
+### 6. ¿Cómo se resolvió la inconsistencia de categorías en la variable Shock?
+**R/** El proceso de limpieza de datos reveló variaciones invisibles en las cadenas de texto ingresadas manualmente por operadores clínicos (p.ej., `"si"` frente a `"si "`). En la capa de transformación del dashboard (Power Query), se consolidaron lógicamente estas representaciones creando la columna limpia `Shock_Consolidado`, logrando representar con exactitud los porcentajes de incidencia del shock (30% reales) en la población.
