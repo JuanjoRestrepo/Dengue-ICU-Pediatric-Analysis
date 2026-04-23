@@ -13,34 +13,38 @@ Desarrollado bajo estándares de la industria, rigor estadístico y mejores prá
 
 El análisis predictivo se materializa en un Dashboard interactivo en Power BI compuesto por 3 páginas clave. Este dashboard está diseñado para soportar decisiones clínicas, proporcionando interpretabilidad total sobre el modelo de Machine Learning (SHAP).
 
-### Página 1: Resumen General y Métricas Globales
-
+### Page 1: Resumen General y Métricas Globales
 Provee el panorama institucional y métricas base del cohorte analizado.
+* **KPIs Clave:** Total de Pacientes (40 en test set), Mortalidad Observada (0.00%), Score PIM3 Promedio (3.92) y Promedio de Plaquetas (13,657).
+* **Contexto:** Vista macro de los predictores globales más relevantes derivados del modelo XGBoost (importancia global SHAP).
 
-- **KPIs Clave:** Total de Pacientes (40 en test set), Mortalidad Observada (0.00%), Score PIM3 Promedio (3.92) y Promedio de Plaquetas (13,657).
-- **Contexto:** Vista macro de los predictores globales más relevantes derivados del modelo XGBoost (importancia global SHAP).
-- **Imagen:**
-  ![Dashboard_P1](Power_BI/images/P1.png)
+<div align="center">
+  <img src="Power_BI/images/P1.png" alt="Dashboard Page 1" width="800"/>
+</div>
 
-### Página 2: Análisis de Riesgo Individual — Indicadores de Falla Orgánica
+### Page 2: Análisis de Riesgo Individual — Indicadores de Falla Orgánica
+Diseñada bajo el principio de "que los datos hablen por sí solos", la página se centra en la estratificación de riesgo de cada paciente, comunicando de entrada tres narrativas clínicas clave:
+1. **Perfil Demográfico:** Población predominantemente adolescente y masculina (~69% entre 11-18 años, ~52% masculino).
+2. **Signos de Alarma Universales:** Alta prevalencia de dolor abdominal (~74%), ascitis (~45%) y derrame pleural (~43%).
+3. **Complicaciones Bioquímicas:** El 66% de los pacientes en estado crítico presentan transaminasas elevadas (AST/ALT > 80), junto a recuentos plaquetarios bajos generalizados.
 
-Se centra en la estratificación de riesgo de cada paciente, combinando indicadores de daño hepático y renal.
+* **Scatter Plot (BUN vs AST):** Cuadrantes clínicos divididos por límites fisiológicos (BUN=10, AST=80). Uso de escala logarítmica para gestionar outliers clínicos severos (AST de 2,589).
+* **Perfilamiento de Riesgo:** Diferencia visual rápida entre el 97.5% de pacientes en Riesgo Bajo (puntos verdes) y el 2.5% en Alto Riesgo de mortalidad (punto rojo, Paciente 37).
+* **Distribución Diagnóstica:** Gráfico de dona excluyendo con transparencia los registros nulos para garantizar la trazabilidad estadística.
 
-- **Scatter Plot (BUN vs AST):** Cuadrantes clínicos divididos por límites fisiológicos (BUN=10, AST=80). Uso de escala logarítmica para gestionar outliers clínicos severos (AST de 2,589).
-- **Perfilamiento de Riesgo:** Diferencia visual rápida entre el 97.5% de pacientes en Riesgo Bajo (puntos verdes) y el 2.5% en Alto Riesgo de mortalidad (punto rojo, Paciente 37).
-- **Distribución Diagnóstica:** Gráfico de dona (Dengue grave, Dengue con signos de alarma, Shock por dengue) excluyendo con transparencia los registros nulos para garantizar la trazabilidad estadística.
-- **Imagen:**
-  ![Dashboard_P2](Power_BI/images/P2.png)
+<div align="center">
+  <img src="Power_BI/images/P2.png" alt="Dashboard Page 2" width="800"/>
+</div>
 
-### Página 3: Explicabilidad del Modelo (SHAP) — ¿Qué aprendió el algoritmo?
-
+### Page 3: Explicabilidad del Modelo (SHAP) — ¿Qué aprendió el algoritmo?
 Desmitifica el modelo "caja negra" demostrando de forma transparente cómo se llega a la predicción de mortalidad.
+* **Reducción de Dimensionalidad:** De 75 variables analizadas, el dashboard demuestra que solo 5 tienen impacto real en la predicción del modelo.
+* **Paciente 37 vs. Cohorte (Clustered Bar Chart):** Explica por qué el Paciente 37 está en alto riesgo: su valor extremo de AST es el único factor de riesgo positivo que lo diferencia de la media del grupo. El BUN, sin embargo, concentra el 74% del poder predictivo global.
+* **Tabla de Detalle Clínico:** Desglose paciente a paciente con probabilidad de mortalidad asignada y todos los datos consolidados.
 
-- **Reducción de Dimensionalidad:** De 75 variables analizadas, el dashboard demuestra que solo 5 tienen impacto real en la predicción del modelo.
-- **Paciente 37 vs. Cohorte (Clustered Bar Chart):** Explica por qué el Paciente 37 está en alto riesgo: su valor extremo de AST es el único factor de riesgo positivo que lo diferencia de la media del grupo. El BUN concentra el 74% del poder predictivo.
-- **Tabla de Detalle Clínico:** Desglose paciente a paciente con probabilidad de mortalidad asignada y todos los datos consolidados.
-- **Imagen:**
-  ![Dashboard_P3](Power_BI/images/P3.png)
+<div align="center">
+  <img src="Power_BI/images/P3.png" alt="Dashboard Page 3" width="800"/>
+</div>
 
 > **💡 Insight Técnico:**
 > Para conocer las respuestas técnicas y decisiones de diseño de datos en profundidad (limpieza en Power Query, lógica de imputación clínica, manejo del eje logarítmico, y explicaciones detalladas del impacto SHAP), consulte el documento **[DASHBOARD_FAQ.md](DASHBOARD_FAQ.md)** adjunto en el repositorio.
